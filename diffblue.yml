@@ -1,0 +1,764 @@
+buildCmd: mvn -e -X -Dlicense.skip=true -Dmaven.enforcer.skip=true  -Denforcer.skip=true -Dair.check.skip-all=true -Dmaven.test.skip=true compile
+testCmd: true
+skipVerification: true
+cbmcArguments:
+  # Do not generate coverage comments on generated tests.
+  java-generate-no-comments: true
+  # Constrain the size of arrays created in the analyzed code.
+  java-max-vla-length: 100000
+phases:
+  -
+    # Phase 0 PRETTY, SIMPLE and SMART - pretty tests, do not test private methods directly, Smart-Harness
+    timeout: 180
+    cbmcArguments:
+      # Use simple models first containers (ArrayList, HashMap, HashSet,...) will have a maximum size of one.
+      classpath: '/tools/cbmc/models-simple-overlay.jar:/tools/cbmc/models.jar:.'
+      # Set a limit on the number of instructions that can be generated as part of a test trace.
+      depth: 1500
+      # Maximum allowed length for an array passed as test input.
+      max-nondet-array-length: 10
+      # Bound the length of input strings.
+      max-nondet-string-length: 10
+      # Add constraint that strings are printable
+      string-printable: true
+      # Make implicit runtime exceptions explicit.
+      throw-runtime-exceptions: false
+      # Set an upper bound on loop unwinding.
+      unwind: 1
+      # Do not test any methods that have the specified access level.
+      do-not-test-methods-with-access: [private]
+      # Instrument the entry point function only.
+      cover-function-only: false
+      # Instrument the file as opposed to the function only
+      cover-only: file
+      # Set string input value
+      string-input-value: ["foo", "Bar", "BAZ", "1234", "1a 2b 3c", "A1B2C3", "a,b,c", "1", "2", "3", "a/b/c", "a'b'c", ",", "/", "'"]
+      # Instantiate classes using the simplest constructor strategy
+      smart-harness: simplest-constructor-and-nondet
+  -
+    # Phase 1 PRETTY AND COMPLEX - standard models only, pretty tests, do not test private methods directly, input factory
+    timeout: 180
+    cbmcArguments:
+      # Use the standard models library
+      classpath: '/tools/cbmc/models.jar:.'
+      # Set a limit on the number of instructions that can be generated as part of a test trace.
+      depth: false
+      # never initialize reference-typed parameter to the entry point with null
+      java-assume-inputs-non-null: true
+      # Maximum allowed length for an array passed as test input.
+      max-nondet-array-length: 10
+      # Bound the length of input strings.
+      max-nondet-string-length: 10
+      # Add constraint that strings are printable
+      string-printable: true
+      # Set string input value
+      string-input-value: ["foo", "Bar", "BAZ", "1234", "1a 2b 3c", "A1B2C3", "a,b,c", "1", "2", "3", "a/b/c", "a'b'c", ",", "/", "'"]
+      # Make implicit runtime exceptions explicit.
+      throw-runtime-exceptions: false
+      # Set an upper bound on loop unwinding.
+      unwind: 2
+      # Do not test any methods that have the specified access level.
+      do-not-test-methods-with-access: [private]
+      # Instrument the entry point function only.
+      cover-function-only: false
+      # instrument the file as opposed to the function only
+      cover-only: file
+      # Limit input factory recursive depth (default 0 = no recursion allowed)
+      java-test-input-factory-bmc-recursion-limit: 4
+  -
+    # Phase 2 FIFO Strategy - pretty tests, do not test private methods directly, fifo
+    timeout: 100
+    cbmcArguments:
+      # Use the standard models library
+      classpath: '/tools/cbmc/models.jar:.'
+      # Set a limit on the number of instructions that can be generated as part of a test trace.
+      depth: false
+      # never initialize reference-typed parameter to the entry point with null
+      java-assume-inputs-non-null: true
+      # Maximum allowed length for an array passed as test input.
+      max-nondet-array-length: 30
+      # Add constraint that strings are printable
+      max-nondet-string-length: 100
+      # Explores the program tree breadth-first.
+      paths: fifo
+      # Set string input value
+      string-input-value: ["foo", "Bar", "BAZ", "1234", "1a 2b 3c", "A1B2C3", "a,b,c", "1", "2", "3", "a/b/c", "a'b'c", ",", "/", "'"]
+      # Add constraint that strings are printable
+      string-printable: true
+      # Make implicit runtime exceptions explicit.
+      throw-runtime-exceptions: false
+      # Set an upper bound on loop unwinding.
+      unwind: false
+      # Do not test any methods that have the specified access level.
+      do-not-test-methods-with-access: [private]
+      # Instrument the entry point function only.
+      cover-function-only: false
+      # instrument the file as opposed to the function only
+      cover-only: file
+  -
+    # Phase 3 Exceptions - do not test private methods directly
+    timeout: 180
+    cbmcArguments:
+      # Use simple models containers first (ArrayList, HashMap, HashSet,...) will have a maximum size of one.
+      classpath: '/tools/cbmc/models-simple-overlay.jar:/tools/cbmc/models.jar:.'
+      # Set a limit on the number of instructions that can be generated as part of a test trace.
+      depth: false
+      # Maximum allowed length for an array passed as test input.
+      max-nondet-array-length: 30
+      # Bound the length of input strings.
+      max-nondet-string-length: 30
+      # Add constraint that strings are printable
+      string-printable: false
+      # Make implicit runtime exceptions explicit.
+      throw-runtime-exceptions: true
+      # Set an upper bound on loop unwinding.
+      unwind: 3
+      # Do not test any methods that have the specified access level.
+      do-not-test-methods-with-access: [private]
+      # Instrument the entry point function only.
+      cover-function-only: false
+      # instrument the file as opposed to the function only
+      cover-only: file
+  -
+    # Phase 4 Direct testing - test private methods directly, increased reflection
+    timeout: 180
+    cbmcArguments:
+      # Use simple models containers first (ArrayList, HashMap, HashSet,...) will have a maximum size of one.
+      classpath: '/tools/cbmc/models-simple-overlay.jar:/tools/cbmc/models.jar:.'
+      # Set a limit on the number of instructions that can be generated as part of a test trace.
+      depth: 1500
+      # never initialize reference-typed parameter to the entry point with null
+      java-assume-inputs-non-null: true
+      # Maximum allowed length for an array passed as test input.
+      max-nondet-array-length: 10
+      # Bound the length of input strings.
+      max-nondet-string-length: 10
+      # Add constraint that strings are printable
+      string-printable: true
+      # Make implicit runtime exceptions explicit.
+      throw-runtime-exceptions: false
+      # Set an upper bound on loop unwinding.
+      unwind: 1
+      # Set string input value
+      string-input-value: ["foo", "Bar", "BAZ", "1234", "1a 2b 3c", "A1B2C3", "a,b,c", "1", "2", "3", "a/b/c", "a'b'c", ",", "/", "'"]
+      # If the logs contain output of the following then proceed to phase X
+    nextPhase:
+      # If the function is not analysable then do not pass onto the next phase
+      not_analyzed: null
+  -
+    # PHASE 5 Mocking - aggressive mocking, do not test private methods directly
+    timeout: 180
+    cbmcArguments:
+      # Use simple models containers first (ArrayList, HashMap, HashSet,...) will have a maximum size of one.
+      classpath: '/tools/cbmc/models-simple-overlay.jar:/tools/cbmc/models.jar:.'
+      # Set a limit on the number of instructions that can be generated as part of a test trace.
+      depth: 3000
+      # never initialize reference-typed parameter to the entry point with null
+      java-assume-inputs-non-null: true
+      # Only load the class (and related inner/outer classes) containing the method under test,
+      load-containing-class-only: true
+      # Maximum allowed length for an array passed as test input.
+      max-nondet-array-length: 30
+      # Bound the length of input strings.
+      max-nondet-string-length: 100
+      # Add constraint that strings are printable
+      string-printable: false
+      # Make implicit runtime exceptions explicit.
+      throw-runtime-exceptions: true
+      # Set an upper bound on loop unwinding.
+      unwind: 3
+      # Do not test any methods that have the specified access level.
+      do-not-test-methods-with-access: [private]
+      # Instrument the entry point function only.
+      cover-function-only: false
+      # instrument the file as opposed to the function only
+      cover-only: file
+units:
+ - target:
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/NumberUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/NumberUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/CharUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/CharUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/ObjectUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/ObjectUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/StrUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/StrUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/comparator/CompareUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/comparator/CompareUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/exceptions/UtilException.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/exceptions/UtilException.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/text/StrFormatter.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/text/StrFormatter.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/ArrayUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/ArrayUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/exceptions/ExceptionUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/exceptions/ExceptionUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/lang/Assert.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/lang/Assert.java
+ - target:
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/codec/Rot.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/codec/Rot.java
+ - target:
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/XmlUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/XmlUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/collection/IterUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/collection/IterUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/ClassLoaderUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/ClassLoaderUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/ClassUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/ClassUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/StrUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/StrUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/io/IORuntimeException.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/io/IORuntimeException.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/io/IoUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/io/IoUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/URLUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/URLUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/collection/CollUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/collection/CollUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/CharUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/CharUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/io/resource/ResourceUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/io/resource/ResourceUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/exceptions/ExceptionUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/exceptions/ExceptionUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/io/file/FileWrapper.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/io/file/FileWrapper.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/NumberUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/NumberUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/io/FileUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/io/FileUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/text/StrSpliter.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/text/StrSpliter.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/io/file/FileWriter.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/io/file/FileWriter.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/lang/Assert.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/lang/Assert.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/text/StrFormatter.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/text/StrFormatter.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/ArrayUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/ArrayUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/exceptions/UtilException.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/exceptions/UtilException.java
+ - target:
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/HashUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/HashUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/lang/MurmurHash.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/lang/MurmurHash.java
+ - target:
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/codec/BCD.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/codec/BCD.java
+ - target:
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/StrUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/StrUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/bean/copier/CopyOptions.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/bean/copier/CopyOptions.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/ClassUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/ClassUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/lang/UUID.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/lang/UUID.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/ReUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/ReUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/ReflectUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/ReflectUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/text/StrBuilder.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/text/StrBuilder.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/lang/Matcher.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/lang/Matcher.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/collection/ArrayIter.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/collection/ArrayIter.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/convert/AbstractConverter.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/convert/AbstractConverter.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/exceptions/UtilException.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/exceptions/UtilException.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/convert/ConverterRegistry$SingletonHolder.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/convert/ConverterRegistry.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/collection/CollUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/collection/CollUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/comparator/VersionComparator.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/comparator/VersionComparator.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/exceptions/ExceptionUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/exceptions/ExceptionUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/collection/EnumerationIter.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/collection/EnumerationIter.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/bean/BeanUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/bean/BeanUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/IdUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/IdUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/text/TextSimilarity.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/text/TextSimilarity.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/convert/impl/ArrayConverter.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/convert/impl/ArrayConverter.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/ArrayUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/ArrayUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/collection/IterUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/collection/IterUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/ObjectUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/ObjectUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/lang/func/Func1.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/lang/func/Func1.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/convert/impl/CollectionConverter.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/convert/impl/CollectionConverter.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/convert/ConvertException.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/convert/ConvertException.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/CharUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/CharUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/text/StrFormatter.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/text/StrFormatter.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/NumberUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/NumberUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/convert/Convert.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/convert/Convert.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/convert/impl/BeanConverter.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/convert/impl/BeanConverter.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/RandomUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/RandomUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/TypeUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/TypeUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/lang/SimpleCache.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/lang/SimpleCache.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/convert/ConverterRegistry.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/convert/ConverterRegistry.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/text/StrSpliter.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/text/StrSpliter.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/convert/Converter.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/convert/Converter.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/lang/Assert.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/lang/Assert.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/convert/impl/EnumConverter.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/convert/impl/EnumConverter.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/convert/BasicType.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/convert/BasicType.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/convert/impl/MapConverter.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/convert/impl/MapConverter.java
+ - target:
+   - dir: hutool-poi/target/classes
+     file: cn/hutool/poi/excel/sax/ExcelSaxUtil.class
+     sourceDir: hutool-poi/src/main/java
+     sourceFile: cn/hutool/poi/excel/sax/ExcelSaxUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/CharUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/CharUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/date/DateTime.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/date/DateTime.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/StrUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/StrUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/ArrayUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/ArrayUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/exceptions/UtilException.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/exceptions/UtilException.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/date/DateUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/date/DateUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/text/StrFormatter.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/text/StrFormatter.java
+   - dir: hutool-poi/target/classes
+     file: cn/hutool/poi/excel/sax/CellDataType.class
+     sourceDir: hutool-poi/src/main/java
+     sourceFile: cn/hutool/poi/excel/sax/CellDataType.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/exceptions/ExceptionUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/exceptions/ExceptionUtil.java
+ - target:
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/text/StrSpliter.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/text/StrSpliter.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/NumberUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/NumberUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/lang/SimpleCache.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/lang/SimpleCache.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/StrUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/StrUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/lang/PatternPool$RegexWithFlag.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/lang/PatternPool.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/CharUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/CharUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/lang/PatternPool.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/lang/PatternPool.java
+ - target:
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/codec/Base32.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/codec/Base32.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/CharUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/CharUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/StrUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/StrUtil.java
+ - target:
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/codec/Base64Encoder.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/codec/Base64Encoder.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/StrUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/StrUtil.java
+ - target:
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/lang/MurmurHash.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/lang/MurmurHash.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/StrUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/StrUtil.java
+ - target:
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/CharUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/CharUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/text/ASCIIStrCache.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/text/ASCIIStrCache.java
+ - target:
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/codec/Base64Decoder.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/codec/Base64Decoder.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/codec/Base64Decoder$IntWrapper.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/codec/Base64Decoder.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/StrUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/StrUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/ArrayUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/ArrayUtil.java
+ - target:
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/ArrayUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/ArrayUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/collection/IterUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/collection/IterUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/lang/Editor.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/lang/Editor.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/StrUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/StrUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/ArrayUtil$3.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/ArrayUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/ArrayUtil$2.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/ArrayUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/ArrayUtil$1.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/ArrayUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/exceptions/UtilException.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/exceptions/UtilException.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/map/MapUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/map/MapUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/collection/CollUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/collection/CollUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/CharUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/CharUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/exceptions/ExceptionUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/exceptions/ExceptionUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/ObjectUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/ObjectUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/lang/Filter.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/lang/Filter.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/comparator/CompareUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/comparator/CompareUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/ArrayUtil$4.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/ArrayUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/text/StrFormatter.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/text/StrFormatter.java
+ - target:
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/PageUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/PageUtil.java
+ - target:
+   - dir: hutool-bloomFilter/target/classes
+     file: cn/hutool/bloomfilter/BitSetBloomFilter.class
+     sourceDir: hutool-bloomFilter/src/main/java
+     sourceFile: cn/hutool/bloomfilter/BitSetBloomFilter.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/collection/IterUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/collection/IterUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/ClassLoaderUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/ClassLoaderUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/ClassUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/ClassUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/HashUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/HashUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/StrUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/StrUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/io/IORuntimeException.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/io/IORuntimeException.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/io/IoUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/io/IoUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/URLUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/URLUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/collection/CollUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/collection/CollUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/CharUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/CharUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/io/resource/ResourceUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/io/resource/ResourceUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/exceptions/ExceptionUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/exceptions/ExceptionUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/NumberUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/NumberUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/io/FileUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/io/FileUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/text/StrSpliter.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/text/StrSpliter.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/text/StrFormatter.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/text/StrFormatter.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/util/ArrayUtil.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/util/ArrayUtil.java
+   - dir: hutool-core/target/classes
+     file: cn/hutool/core/exceptions/UtilException.class
+     sourceDir: hutool-core/src/main/java
+     sourceFile: cn/hutool/core/exceptions/UtilException.java
