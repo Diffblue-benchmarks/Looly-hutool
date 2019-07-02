@@ -217,11 +217,6 @@ units:
      sourceFile: cn/hutool/core/lang/Assert.java
  - target:
    - dir: hutool-core/target/classes
-     file: cn/hutool/core/codec/Rot.class
-     sourceDir: hutool-core/src/main/java
-     sourceFile: cn/hutool/core/codec/Rot.java
- - target:
-   - dir: hutool-core/target/classes
      file: cn/hutool/core/util/XmlUtil.class
      sourceDir: hutool-core/src/main/java
      sourceFile: cn/hutool/core/util/XmlUtil.java
@@ -314,11 +309,6 @@ units:
      file: cn/hutool/core/lang/MurmurHash.class
      sourceDir: hutool-core/src/main/java
      sourceFile: cn/hutool/core/lang/MurmurHash.java
- - target:
-   - dir: hutool-core/target/classes
-     file: cn/hutool/core/codec/BCD.class
-     sourceDir: hutool-core/src/main/java
-     sourceFile: cn/hutool/core/codec/BCD.java
  - target:
    - dir: hutool-core/target/classes
      file: cn/hutool/core/util/StrUtil.class
@@ -556,28 +546,6 @@ units:
      sourceFile: cn/hutool/core/lang/PatternPool.java
  - target:
    - dir: hutool-core/target/classes
-     file: cn/hutool/core/codec/Base32.class
-     sourceDir: hutool-core/src/main/java
-     sourceFile: cn/hutool/core/codec/Base32.java
-   - dir: hutool-core/target/classes
-     file: cn/hutool/core/util/CharUtil.class
-     sourceDir: hutool-core/src/main/java
-     sourceFile: cn/hutool/core/util/CharUtil.java
-   - dir: hutool-core/target/classes
-     file: cn/hutool/core/util/StrUtil.class
-     sourceDir: hutool-core/src/main/java
-     sourceFile: cn/hutool/core/util/StrUtil.java
- - target:
-   - dir: hutool-core/target/classes
-     file: cn/hutool/core/codec/Base64Encoder.class
-     sourceDir: hutool-core/src/main/java
-     sourceFile: cn/hutool/core/codec/Base64Encoder.java
-   - dir: hutool-core/target/classes
-     file: cn/hutool/core/util/StrUtil.class
-     sourceDir: hutool-core/src/main/java
-     sourceFile: cn/hutool/core/util/StrUtil.java
- - target:
-   - dir: hutool-core/target/classes
      file: cn/hutool/core/lang/MurmurHash.class
      sourceDir: hutool-core/src/main/java
      sourceFile: cn/hutool/core/lang/MurmurHash.java
@@ -594,23 +562,6 @@ units:
      file: cn/hutool/core/text/ASCIIStrCache.class
      sourceDir: hutool-core/src/main/java
      sourceFile: cn/hutool/core/text/ASCIIStrCache.java
- - target:
-   - dir: hutool-core/target/classes
-     file: cn/hutool/core/codec/Base64Decoder.class
-     sourceDir: hutool-core/src/main/java
-     sourceFile: cn/hutool/core/codec/Base64Decoder.java
-   - dir: hutool-core/target/classes
-     file: cn/hutool/core/codec/Base64Decoder$IntWrapper.class
-     sourceDir: hutool-core/src/main/java
-     sourceFile: cn/hutool/core/codec/Base64Decoder.java
-   - dir: hutool-core/target/classes
-     file: cn/hutool/core/util/StrUtil.class
-     sourceDir: hutool-core/src/main/java
-     sourceFile: cn/hutool/core/util/StrUtil.java
-   - dir: hutool-core/target/classes
-     file: cn/hutool/core/util/ArrayUtil.class
-     sourceDir: hutool-core/src/main/java
-     sourceFile: cn/hutool/core/util/ArrayUtil.java
  - target:
    - dir: hutool-core/target/classes
      file: cn/hutool/core/util/ArrayUtil.class
@@ -685,80 +636,3 @@ units:
      file: cn/hutool/core/util/PageUtil.class
      sourceDir: hutool-core/src/main/java
      sourceFile: cn/hutool/core/util/PageUtil.java
- - target:
-   - dir: hutool-bloomFilter/target/classes
-     file: cn/hutool/bloomfilter/BitSetBloomFilter.class
-     sourceDir: hutool-bloomFilter/src/main/java
-     sourceFile: cn/hutool/bloomfilter/BitSetBloomFilter.java
-   - dir: hutool-core/target/classes
-     file: cn/hutool/core/collection/IterUtil.class
-     sourceDir: hutool-core/src/main/java
-     sourceFile: cn/hutool/core/collection/IterUtil.java
-   - dir: hutool-core/target/classes
-     file: cn/hutool/core/util/ClassLoaderUtil.class
-     sourceDir: hutool-core/src/main/java
-     sourceFile: cn/hutool/core/util/ClassLoaderUtil.java
-   - dir: hutool-core/target/classes
-     file: cn/hutool/core/util/ClassUtil.class
-     sourceDir: hutool-core/src/main/java
-     sourceFile: cn/hutool/core/util/ClassUtil.java
-   - dir: hutool-core/target/classes
-     file: cn/hutool/core/util/HashUtil.class
-     sourceDir: hutool-core/src/main/java
-     sourceFile: cn/hutool/core/util/HashUtil.java
-   - dir: hutool-core/target/classes
-     file: cn/hutool/core/util/StrUtil.class
-     sourceDir: hutool-core/src/main/java
-     sourceFile: cn/hutool/core/util/StrUtil.java
-   - dir: hutool-core/target/classes
-     file: cn/hutool/core/io/IORuntimeException.class
-     sourceDir: hutool-core/src/main/java
-     sourceFile: cn/hutool/core/io/IORuntimeException.java
-   - dir: hutool-core/target/classes
-     file: cn/hutool/core/io/IoUtil.class
-     sourceDir: hutool-core/src/main/java
-     sourceFile: cn/hutool/core/io/IoUtil.java
-   - dir: hutool-core/target/classes
-     file: cn/hutool/core/util/URLUtil.class
-     sourceDir: hutool-core/src/main/java
-     sourceFile: cn/hutool/core/util/URLUtil.java
-   - dir: hutool-core/target/classes
-     file: cn/hutool/core/collection/CollUtil.class
-     sourceDir: hutool-core/src/main/java
-     sourceFile: cn/hutool/core/collection/CollUtil.java
-   - dir: hutool-core/target/classes
-     file: cn/hutool/core/util/CharUtil.class
-     sourceDir: hutool-core/src/main/java
-     sourceFile: cn/hutool/core/util/CharUtil.java
-   - dir: hutool-core/target/classes
-     file: cn/hutool/core/io/resource/ResourceUtil.class
-     sourceDir: hutool-core/src/main/java
-     sourceFile: cn/hutool/core/io/resource/ResourceUtil.java
-   - dir: hutool-core/target/classes
-     file: cn/hutool/core/exceptions/ExceptionUtil.class
-     sourceDir: hutool-core/src/main/java
-     sourceFile: cn/hutool/core/exceptions/ExceptionUtil.java
-   - dir: hutool-core/target/classes
-     file: cn/hutool/core/util/NumberUtil.class
-     sourceDir: hutool-core/src/main/java
-     sourceFile: cn/hutool/core/util/NumberUtil.java
-   - dir: hutool-core/target/classes
-     file: cn/hutool/core/io/FileUtil.class
-     sourceDir: hutool-core/src/main/java
-     sourceFile: cn/hutool/core/io/FileUtil.java
-   - dir: hutool-core/target/classes
-     file: cn/hutool/core/text/StrSpliter.class
-     sourceDir: hutool-core/src/main/java
-     sourceFile: cn/hutool/core/text/StrSpliter.java
-   - dir: hutool-core/target/classes
-     file: cn/hutool/core/text/StrFormatter.class
-     sourceDir: hutool-core/src/main/java
-     sourceFile: cn/hutool/core/text/StrFormatter.java
-   - dir: hutool-core/target/classes
-     file: cn/hutool/core/util/ArrayUtil.class
-     sourceDir: hutool-core/src/main/java
-     sourceFile: cn/hutool/core/util/ArrayUtil.java
-   - dir: hutool-core/target/classes
-     file: cn/hutool/core/exceptions/UtilException.class
-     sourceDir: hutool-core/src/main/java
-     sourceFile: cn/hutool/core/exceptions/UtilException.java
